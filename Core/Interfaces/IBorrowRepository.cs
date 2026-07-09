@@ -1,6 +1,6 @@
 namespace ClassLibrary1.Interfaces;
 
-public class IBorrowRepository
+public interface IBorrowRepository
 {
     
 }
