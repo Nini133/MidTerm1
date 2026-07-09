@@ -2,7 +2,7 @@ using ClassLibrary1.Models;
 
 namespace ClassLibrary1.Interfaces;
 
-public interface IFileManager
+public interface IUserManager
 {
     List<User> GetAll();
     
@@ -12,3 +12,4 @@ public interface IFileManager
     void UpdateUser(User user);
     void DeleteUser(String Email);
 }
+
