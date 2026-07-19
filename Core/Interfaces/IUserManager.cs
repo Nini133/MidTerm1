@@ -11,5 +11,7 @@ public interface IUserManager
     void AddUser(User user);
     void UpdateUser(User user);
     void DeleteUser(String Email);
+    
+    void Savechanges(List<User> users);
 }
 
