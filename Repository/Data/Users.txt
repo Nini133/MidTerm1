@@ -1,2 +1,1 @@
-{"Id":0,"Username":"Nini Ch","Email":"nini@gmail.com","Password":"$2a$11$wCyxXgg0GHN9TGH3qx30hui8HLXUyw5PweKrqJV4HyZYRFxmaH.vu","Verification":"1549","Role":0}
-{"Id":0,"Username":"Nini Ch","Email":"nini@gmail.com","Password":"$2a$11$fZK/2fdU7oU88j6tOW5KbuBKlC/Ncjzqdu00TJ4X8NNFvROnqtwyi","Verification":"5828","Role":0}
+{"LastLogin":"0001-01-01T00:00:00","Username":"Nini Ch","Email":"nini13@gmail.com","Password":"$2a$11$NRfeb3Gq8HSIUiRGEQ3nr.Ein01iHp3xd5Yg1hVgfcWBZbEbli6xC","VerificationCode":"7226"}

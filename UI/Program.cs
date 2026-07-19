@@ -6,11 +6,15 @@ namespace UI;
 
 public class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         IUserManager repository = new UserRepository();
         UserServices users = new UserServices(repository);  
+        EmailService emailService = new EmailService();
         
-        users.RegisterUser("Nini Ch", "nini@gmail.com","123456");
+        UserServices userServices = new UserServices(repository, emailService);
+        
+        users.RegisterUser("Nini Ch", "nini13@gmail.com","123456");
+        userServices.VerifyUser("Nini Ch", "123456");
     }
 }
