@@ -1,75 +1,166 @@
-using System.Text.Json;
+using System.Globalization;
+using ClassLibrary1.Enums;
 using ClassLibrary1.Interfaces;
 using ClassLibrary1.Models;
 
 namespace ClassLibrary1;
 
+
 public class UserRepository : IUserManager
 {
-    private readonly string _filepath = "/Users/Nini.Chachkhalia/Library/CloudStorage/OneDrive-JSCSpaceInternational,402178442/Documents/ClassLibrary1/Repository/Data/Users.txt";
-    
-    
+    private readonly string _filePath;
+
+    public UserRepository(string? filePath = null)
+    {
+        _filePath = filePath ?? ResolveDefaultPath();
+
+        var directory = Path.GetDirectoryName(_filePath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        if (!File.Exists(_filePath))
+        {
+            File.Create(_filePath).Dispose();
+        }
+
+        // TEMPORARY DEBUG LINE - remove once you confirm the path is correct.
+        Console.WriteLine($"[DEBUG] Users.txt path: {_filePath}");
+    }
+
+  
+    private static string ResolveDefaultPath()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (dir != null && dir.GetFiles("*.sln").Length == 0)
+        {
+            dir = dir.Parent;
+        }
+
+        var solutionRoot = dir?.FullName ?? AppContext.BaseDirectory;
+        return Path.Combine(solutionRoot, "Repository", "Data", "Users.txt");
+    }
+
     public List<User> GetAll()
     {
-        string[] lines = File.ReadAllLines(_filepath);
-        List<User> users = new List<User>();
-        if(!File.Exists(_filepath)){
-            return new List<User>();
-        }
-        foreach (var line in lines)
+        var users = new List<User>();
+
+        try
         {
-            if (string.IsNullOrEmpty(line))
+            var lines = File.ReadAllLines(_filePath);
+            foreach (var line in lines)
             {
-                continue;
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var user = ParseLine(line);
+                if (user != null)
+                {
+                    users.Add(user);
+                }
             }
-            User user = JsonSerializer.Deserialize<User>(line);
-            users.Add(user);
         }
-        
+        catch (IOException ex)
+        {
+            Console.WriteLine($"მომხმარებლების ფაილის წაკითხვისას მოხდა შეცდომა: {ex.Message}");
+        }
+
         return users;
     }
 
-    public User GetUserByEmail(string Email)
-    
+    public User? GetUserByUsername(string username)
     {
-       List<User> users = GetAll();
-       var  user = users.FirstOrDefault(u => u.Email == Email);
-       return user;
+        return GetAll().FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public User? GetUserById(int id)
+    {
+        return GetAll().FirstOrDefault(u => u.Id == id);
     }
 
     public void AddUser(User user)
     {
-        
-        string line = JsonSerializer.Serialize<User>(user);
-        File.AppendAllLines(_filepath, new[] { line });
-        throw new NotImplementedException();
+        try
+        {
+            File.AppendAllLines(_filePath, new[] { ToLine(user) });
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"მომხმარებლის შენახვისას მოხდა შეცდომა: {ex.Message}");
+            throw;
+        }
     }
 
     public void UpdateUser(User user)
     {
-        List<User> users = GetAll();
-        int index = users.FindIndex(u => u.Email == user.Email);
-        if (index != -1)
+        var users = GetAll();
+        var index = users.FindIndex(u => u.Id == user.Id);
+        if (index == -1)
         {
-            users[index] = user;
+            throw new InvalidOperationException($"მომხმარებელი ID={user.Id} ვერ მოიძებნა.");
         }
-        Savechanges(users);
-            
-        
-        throw new NotImplementedException();
+
+        users[index] = user;
+        SaveChanges(users);
     }
 
-    public void DeleteUser(string Email)
+    public void DeleteUser(int id)
     {
-        throw new NotImplementedException();
+        var users = GetAll();
+        var removed = users.RemoveAll(u => u.Id == id);
+        if (removed == 0)
+        {
+            throw new InvalidOperationException($"მომხმარებელი ID={id} ვერ მოიძებნა.");
+        }
+
+        SaveChanges(users);
     }
-    
-    public void Savechanges(List<User> users)
+
+    private void SaveChanges(List<User> users)
     {
-        File.Delete(_filepath);
-            File.AppendAllLines(_filepath, users.Select(u => JsonSerializer.Serialize<User>(u)));
+        try
+        {
+            File.WriteAllLines(_filePath, users.Select(ToLine));
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"ფაილში ცვლილებების შენახვისას მოხდა შეცდომა: {ex.Message}");
+            throw;
+        }
     }
-    
-    
+
+    private static string ToLine(User user)
+    {
+        var roleText = user.Role == Roles.Admin ? "admin" : "client";
+        return $"{user.Id}|{user.Username}|{user.PasswordHash}|{roleText}|{user.Fines.ToString("0.00", CultureInfo.InvariantCulture)}";
+    }
+
+    private static User? ParseLine(string line)
+    {
+        var parts = line.Split('|');
+        if (parts.Length != 5)
+        {
+            Console.WriteLine($"ფორმატის ხაზი გამოტოვებულია: {line}");
+            return null;
+        }
+
+        try
+        {
+            var id = int.Parse(parts[0].Trim());
+            var username = parts[1].Trim();
+            var passwordHash = parts[2].Trim();
+            var roleText = parts[3].Trim().ToLowerInvariant();
+            var fines = decimal.Parse(parts[4].Trim(), CultureInfo.InvariantCulture);
+
+            return roleText == "admin"
+                ? new AdminUser(id, username, passwordHash, fines)
+                : new ClientUser(id, username, passwordHash, fines);
+        }
+        catch (FormatException)
+        {
+            Console.WriteLine($"ფორმატის ხაზი გამოტოვებულია: {line}");
+            return null;
+        }
+    }
 }
-

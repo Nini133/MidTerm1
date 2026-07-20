@@ -1,1 +1,1 @@
-{"LastLogin":"0001-01-01T00:00:00","Username":"Nini Ch","Email":"nini13@gmail.com","Password":"$2a$11$NRfeb3Gq8HSIUiRGEQ3nr.Ein01iHp3xd5Yg1hVgfcWBZbEbli6xC","VerificationCode":"7226"}
+1001|nini_ch|$2a$11$.HRHYSCoy1cEnrn89W0VKufTAYAeRy6gtURetpdklHoHn8KVuBtz6|client|0.00

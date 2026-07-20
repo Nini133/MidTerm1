@@ -1,28 +1,52 @@
-public class User
+using ClassLibrary1.Enums;
+
+namespace ClassLibrary1.Models;
+
+
+public abstract class User
 {
-    public DateTime LastLogin { get; set; }
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string VerificationCode { get; set; }
+    public int Id { get; private set; }
+    public string Username { get; private set; }
 
-    public User(DateTime lastLogin, string username, string email, string password, string verificationCode)
+    public string PasswordHash { get;  set; }
+
+    public Roles Role { get; private set; }
+    public decimal Fines { get; private set; }
+    
+
+    protected User(int id, string username, string passwordHash, Roles role, decimal fines = 0m)
     {
-        LastLogin = lastLogin;
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("Username cannot be empty.", nameof(username));
+        if (string.IsNullOrWhiteSpace(passwordHash))
+            throw new ArgumentException("Password hash cannot be empty.", nameof(passwordHash));
+        if (fines < 0)
+            throw new ArgumentException("Fines cannot be negative.", nameof(fines));
+
+        Id = id;
         Username = username;
-        Email = email;
-        Password = password;
-        VerificationCode = verificationCode;
+        PasswordHash = passwordHash;
+        Role = role;
+        Fines = fines;
     }
 
-    public User(string username, string email, string password, string verificationCode)
+    public void AddFine(decimal amount)
     {
-        LastLogin = DateTime.Now;
-        Username = username;
-        Email = email;
-        Password = password;
-        VerificationCode = verificationCode;
+        if (amount <= 0)
+            throw new ArgumentException("Fine amount must be positive.", nameof(amount));
+        Fines += amount;
     }
 
-    public User() { } 
+    public void PayFine(decimal amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentException("Payment amount must be positive.", nameof(amount));
+        if (amount > Fines)
+            throw new InvalidOperationException("Payment exceeds outstanding fines.");
+        Fines -= amount;
+    }
+
+    public bool HasUnpaidFines() => Fines > 0;
+    
+    public abstract void DisplayMenu();
 }
