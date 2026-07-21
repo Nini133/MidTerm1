@@ -12,7 +12,7 @@ public class ClientUser : User
     public override void DisplayMenu()
     {
         Console.WriteLine();
-        Console.WriteLine("=== კლიენტის მენიუ ===");
+        Console.WriteLine("---  მომხმარებლის მენიუ --- ");
         Console.WriteLine("1. კატალოგის დათვალიერება");
         Console.WriteLine("2. წიგნის ძებნა (სათაური/ავტორი)");
         Console.WriteLine("3. წიგნის გამოწერა");

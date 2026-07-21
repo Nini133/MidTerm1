@@ -15,7 +15,7 @@ public class AdminUser : User
         Console.WriteLine("--- ადმინისტრატორის მენიუ ---");
         Console.WriteLine("1. წიგნების მართვა (დამატება/წაშლა/რაოდენობა)");
         Console.WriteLine("2. მოთხოვნების დადასტურება/უარყოფა");
-        Console.WriteLine("3. ვადაგადაცილებულების შეტყობინებები");
+        Console.WriteLine("3. დაგვიანებულ წიგნებზე შეტყობინებები");
         Console.WriteLine("0. გასვლა");
     }
 }

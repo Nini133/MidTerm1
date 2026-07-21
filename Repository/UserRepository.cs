@@ -141,7 +141,7 @@ public class UserRepository : IUserManager
         var parts = line.Split('|');
         if (parts.Length != 5)
         {
-            Console.WriteLine($"ფორმატის ხაზი გამოტოვებულია: {line}");
+            Console.WriteLine($"missing the line: {line}");
             return null;
         }
 
@@ -159,7 +159,7 @@ public class UserRepository : IUserManager
         }
         catch (FormatException)
         {
-            Console.WriteLine($"ფორმატის ხაზი გამოტოვებულია: {line}");
+            Console.WriteLine($"missing the line: {line}");
             return null;
         }
     }
