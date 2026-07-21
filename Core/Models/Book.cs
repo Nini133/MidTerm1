@@ -1,10 +1,6 @@
 namespace ClassLibrary1.Models;
 
-/// <summary>
-/// Represents a book title in the catalog. Quantity is encapsulated -
-/// it can only change through IncreaseQuantity/DecreaseQuantity, so a
-/// borrow/return can never push it below zero from outside code.
-/// </summary>
+
 public class Book
 {
     public string Isbn { get; private set; }
