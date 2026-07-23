@@ -25,8 +25,7 @@ public class UserRepository : IUserManager
             File.Create(_filePath).Dispose();
         }
 
-        // TEMPORARY DEBUG LINE - remove once you confirm the path is correct.
-        Console.WriteLine($"[DEBUG] Users.txt path: {_filePath}");
+        
     }
 
   
