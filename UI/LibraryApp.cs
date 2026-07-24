@@ -6,6 +6,7 @@ using UI.Menus;
 
 namespace UI;
 
+
 public class LibraryApp
 {
     private readonly AuthMenu _authMenu;
@@ -20,8 +21,11 @@ public class LibraryApp
         IBookRepository bookRepository = new BookRepository();
         var bookServices = new BookServices(bookRepository);
 
+        IBorrowRepository borrowRepository = new BorrowRepository();
+        var borrowServices = new BorrowServices(borrowRepository, bookRepository, userManager);
+
         _authMenu = new AuthMenu(userServices);
-        _clientMenu = new ClientMenu(bookServices);
+        _clientMenu = new ClientMenu(bookServices, borrowServices);
         _adminMenu = new AdminMenu(new BookManagementMenu(bookRepository, bookServices));
     }
 
@@ -59,7 +63,7 @@ public class LibraryApp
         var user = _authMenu.Login();
         if (user == null)
         {
-            return; 
+            return;
         }
 
         if (user.Role == Roles.Admin)
